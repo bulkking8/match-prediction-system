@@ -1,0 +1,141 @@
+/* src/main/resources/static/css/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    color: #fff;
+}
+
+.dashboard {
+    /* 너비는 가변적으로, 하지만 너무 퍼지지 않게 */
+    width: 95%;
+    max-width: 580px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 40px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    text-align: center;
+
+    /* 핵심: 모든 수치 변화에 쫀득한 애니메이션 적용 */
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.status-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: #00f2fe;
+    border: 1px solid #00f2fe;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    animation: pulse 2s infinite;
+}
+
+h2 {
+    font-weight: 900;
+    margin-bottom: 30px;
+    letter-spacing: -1px;
+}
+
+/* 통계 그리드 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 15px;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.stat-label { font-size: 0.7rem; color: #aaa; margin-bottom: 5px; }
+.stat-value { font-size: 1.2rem; font-weight: 900; color: #00f2fe; }
+
+/* 팀 이름 및 승률 */
+.team-names {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.vs-badge {
+    background: #ff4757;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+}
+
+.prob-container {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50px;
+    margin: 20px 0 10px 0;
+    height: 10px;
+    overflow: hidden;
+}
+
+#prob-bar {
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    height: 100%;
+    width: 0%;
+    transition: width 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+#prob-text { font-size: 1.6rem; font-weight: 900; color: #00f2fe; }
+
+/* 차트 영역 */
+.chart-container {
+    height: 220px;
+    margin: 20px 0;
+}
+
+/* 하단 결과 및 로그 */
+.winner-box {
+    margin-top: 25px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #1e3c72;
+    border-radius: 20px;
+    font-weight: 800;
+}
+
+.analysis-log {
+    margin-top: 25px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+    padding: 15px;
+    text-align: left;
+}
+
+.log-content {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: #4facfe;
+    min-height: 80px;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+}

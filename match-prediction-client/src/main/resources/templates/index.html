@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 실시간 경기 예측 시스템</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="dashboard" id="main-card">
+    <div class="status-badge">ENGINE ACTIVE</div>
+    <h2>AI REAL-TIME PREDICTION</h2>
+
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-label">분석 데이터</div>
+            <div id="sentence-count" class="stat-value">0</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">AI 신뢰도</div>
+            <div class="stat-value">94.8%</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">업데이트</div>
+            <div class="stat-value">5s</div>
+        </div>
+    </div>
+
+    <div class="team-names">
+        <span id="teamA">-</span>
+        <span class="vs-badge">VS</span>
+        <span id="teamB">-</span>
+    </div>
+
+    <div class="prob-container">
+        <div id="prob-bar"></div>
+    </div>
+    <div id="prob-text">0%</div>
+
+    <div class="chart-container">
+        <canvas id="predictionChart"></canvas>
+    </div>
+
+    <div class="winner-box">
+        <div style="font-size: 0.8rem; opacity: 0.7;">PREDICTED WINNER</div>
+        <div id="predictedWinner" style="font-size: 1.5rem;">분석 중...</div>
+    </div>
+
+    <div class="analysis-log">
+        <div id="log-content" class="log-content">
+            <div style="color: #888;">엔진으로부터 로그를 기다리는 중...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 전역 변수 설정 (포트폴리오용 고정 IP)
+    const SERVER_URL = "http://192.168.219.105:8086";
+    const GAME_ID = "20260304022F227";
+
+    // Chart.js 초기화
+    const ctx = document.getElementById('predictionChart').getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Team A', 'Team B'],
+            datasets: [{
+                data: [0, 0],
+                backgroundColor: ['#4facfe', '#f093fb'],
+                borderWidth: 0,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#fff' } },
+                x: { ticks: { color: '#fff' }, grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // 핵심 데이터 업데이트 함수
+    async function updateDashboard() {
+        try {
+            // 1. 경기 통계 데이터(차트 및 확률) Fetch
+            const response = await fetch(`${SERVER_URL}/api/v1/predict/${GAME_ID}`);
+            if (response.ok) {
+                const data = await response.json();
+                updateUI(data);
+            }
+
+            // 2. 실시간 분석 로그 Fetch (자바 서버의 logQueue에서 가져옴)
+            const logResponse = await fetch(`${SERVER_URL}/api/v1/logs`);
+            if (logResponse.ok) {
+                const logs = await logResponse.json();
+                updateLogs(logs);
+            }
+
+        } catch (error) {
+            console.error("서버 연결 실패:", error);
+        }
+    }
+
+    // UI 요소 텍스트 업데이트
+    function updateUI(data) {
+        document.getElementById('teamA').innerText = data.teamA;
+        document.getElementById('teamB').innerText = data.teamB;
+        document.getElementById('prob-text').innerText = data.winProbability + "%";
+        document.getElementById('prob-bar').style.width = data.winProbability + "%";
+        document.getElementById('predictedWinner').innerText = "🏆 " + data.predictedWinner;
+        document.getElementById('sentence-count').innerText = (data.teamAPosCnt + data.teamBNegCnt);
+
+        myChart.data.labels = [data.teamA, data.teamB];
+        myChart.data.datasets[0].data = [data.teamAPosCnt, data.teamBNegCnt];
+        myChart.update();
+    }
+
+    // 로그 창 업데이트 (자바에서 넘어온 리스트 순회)
+    function updateLogs(logs) {
+        const logBox = document.getElementById('log-content');
+        if (logs.length === 0) return;
+
+        logBox.innerHTML = ''; // 기존 로그 청소
+        
+        logs.forEach(msg => {
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            const logEntry = document.createElement('div');
+            logEntry.style.marginBottom = "6px";
+            logEntry.style.fontSize = "0.85rem";
+            logEntry.style.borderLeft = "2px solid #00f2fe";
+            logEntry.style.paddingLeft = "8px";
+            logEntry.innerHTML = `<span style="color: #00f2fe; font-weight: bold;">[${time}]</span> ${msg}`;
+            logBox.appendChild(logEntry); // 자바에서 이미 reverse해서 주므로 append 사용
+        });
+    }
+
+    // 5초 주기로 실행
+    setInterval(updateDashboard, 5000);
+    window.onload = updateDashboard;
+</script>
+</body>
+</html>
