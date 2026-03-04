@@ -46,6 +46,27 @@
 
 ---
 
+
+## 📁 Project Structure
+```text
+.
+├── match-prediction-server/        # Spring Boot 백엔드 및 웹 프런트엔드
+│   ├── src/main/java/org/duhyeok/
+│   │   ├── controller/             # Log/Predict API 엔드포인트
+│   │   ├── service/                # 분석 엔진 실행 및 데이터 처리 로직
+│   │   └── model/                  # 경기 데이터 DTO 및 로그 객체
+│   ├── src/main/resources/
+│   │   ├── static/                 # Frontend 자산 (JS, CSS, Images)
+│   │   └── templates/              # Thymeleaf HTML (index.html)
+│   └── pom.xml                     # Maven 의존성 설정
+│
+├── analysis-engine/                # Python 기반 실시간 분석 엔진
+│   ├── crawler.py                  # Selenium 크롤링 및 감성 분석 메인 로직
+│   └── requirements.txt            # Python 라이브러리 의존성
+│
+└── sql/
+    └── schema.sql                  # MySQL 테이블 생성 스크립트
+```
 ## 🖥 화면 구성 (Dashboard)
 
 
